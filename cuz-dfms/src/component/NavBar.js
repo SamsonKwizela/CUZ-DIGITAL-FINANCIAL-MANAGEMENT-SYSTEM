@@ -3,8 +3,8 @@ import { Burger, Container, Group, Image } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 // import { MantineLogo } from '@mantinex/mantine-logo';
 import classes from './component.module.css';
-import logo from "../image/logo.png";
-import { Link } from 'react-router-dom';
+import logo from "../images/logo.png";
+//import { Link } from 'react-router-dom';
 
 const links = [
   { link: '/about', label: 'About Us' },
