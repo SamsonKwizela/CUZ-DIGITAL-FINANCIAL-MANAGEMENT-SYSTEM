@@ -5,11 +5,12 @@ import { Login } from './auth/Login';
 import { Hero } from './landingPage/Hero';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Navigation } from './component/NavBar';
-import { ContactUs } from './landingPage/contactUs';
+import ContactUs from "./landingPage/contactUs";
 import { ForgotPassword } from './auth/ForgotPassword';
 import { ChooseAccountType } from './register/ChooseAccountType';
 import { StudentAccountRegister } from './register/StudentAccountRegister';
 import Overview from './dashBoard/overview';
+
 
 
 function App() {
@@ -29,10 +30,12 @@ function App() {
         <Route path="/choose-account" element={<ChooseAccountType />} />
         <Route path="/register" element={<StudentAccountRegister />} />
         <Route path="/overview" element={<Overview />} />
+         <Route path="/contact" element={<ContactUs />} />
 
 
       </Routes>
     </Router>
+      
 
 
     

@@ -18,17 +18,10 @@ export function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-<<<<<<< HEAD
-  const [loading, setLoading] = useState(false);
-
-  const loginUser = () => {
-    setLoading(true); 
-=======
   const [loading, setLoading] = useState(false); 
 
   const loginUser = () => {
     setLoading(true); // 
->>>>>>> d098e28aa2b3ae7bf40243a89ae5db13866e5d0e
 
     fetch("http://localhost:8000/cuz/bank/login", {
       method: "POST",

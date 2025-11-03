@@ -1,75 +1,41 @@
-import { Button, Group, SimpleGrid, Textarea, TextInput, Title } from '@mantine/core';
-import { useForm } from '@mantine/form';
+import React from "react";
+import "./../landingPage/contactUs.css";
+import { FaTwitter, FaLinkedinIn, FaInstagram } from "react-icons/fa";
 
-export function ContactUs() {
-  const form = useForm({
-    initialValues: {
-      name: '',
-      email: '',
-      subject: '',
-      message: '',
-    },
-    validate: {
-      name: (value) => value.trim().length < 2,
-      email: (value) => !/^\S+@\S+$/.test(value),
-      subject: (value) => value.trim().length === 0,
-    },
-  });
-
+const ContactUs = () => {
   return (
-    <form onSubmit={form.onSubmit(() => {})}>
-      <Title
-        order={2}
-        size="h1"
-        style={{ fontFamily: 'Outfit, var(--mantine-font-family)' }}
-        fw={900}
-        ta="center"
-      >
-        Get in touch
-      </Title>
+    <div className="contact-container">
+      <div className="contact-card">
+        <div className="contact-left">
+          <h1>Contact Us</h1>
+          <p>
+            Have a question or need assistance with your banking services? Our
+            team is here to help you anytime.
+          </p>
+          <form>
+            <input type="text" placeholder="Full Name" required />
+            <input type="email" placeholder="Email Address" required />
+            <textarea placeholder="Your Message" rows="4" required></textarea>
+            <button type="submit">Send Message</button>
+          </form>
+        </div>
 
-      <SimpleGrid cols={{ base: 1, sm: 2 }} mt="xl">
-        <TextInput
-          label="Name"
-          placeholder="Your name"
-          name="name"
-          variant="filled"
-          {...form.getInputProps('name')}
-        />
-        <TextInput
-          label="Email"
-          placeholder="Your email"
-          name="email"
-          variant="filled"
-          {...form.getInputProps('email')}
-        />
-      </SimpleGrid>
+        <div className="contact-right">
+          <h3>Visit us</h3>
+          <p>Plot 45 Cairo Road<br />Lusaka, Zambia</p>
 
-      <TextInput
-        label="Subject"
-        placeholder="Subject"
-        mt="md"
-        name="subject"
-        variant="filled"
-        {...form.getInputProps('subject')}
-      />
-      <Textarea
-        mt="md"
-        label="Message"
-        placeholder="Your message"
-        maxRows={10}
-        minRows={5}
-        autosize
-        name="message"
-        variant="filled"
-        {...form.getInputProps('message')}
-      />
+          <h3>Call or Email</h3>
+          <p>+260973108950<br />kwizelasamson@gmail.com</p>
 
-      <Group justify="center" mt="xl">
-        <Button type="submit" size="md">
-          Send message
-        </Button>
-      </Group>
-    </form>
+          <div className="social-icons">
+            <a href="#"><FaTwitter /></a>
+            <a href="#"><FaLinkedinIn /></a>
+            <a href="#"><FaInstagram /></a>
+          </div>
+        </div>
+      </div>
+    </div>
   );
-}
+};
+
+export default ContactUs;
