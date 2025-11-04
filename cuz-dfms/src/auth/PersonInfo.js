@@ -1,10 +1,15 @@
 import { Button, Checkbox, Group, TextInput } from "@mantine/core";
 import React from "react";
 
-const PersonInfo = ({form}) => {
+const PersonInfo = ({ form }) => {
   return (
     <div>
       <form onSubmit={form.onSubmit((values) => console.log(values))}>
+        <TextInput
+          label="Full Name"
+          description=""
+          placeholder="Samson Kwizela"
+        />
         <TextInput
           withAsterisk
           label="Email"
