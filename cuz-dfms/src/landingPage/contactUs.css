@@ -8,6 +8,7 @@
   padding: 2rem;
 }
 
+/* 💌 Contact Card */
 .contact-card {
   display: flex;
   justify-content: space-between;
@@ -20,6 +21,7 @@
   gap: 3rem;
 }
 
+/* 🩵 Left Section (Form) */
 .contact-left {
   flex: 1;
 }
@@ -44,23 +46,26 @@
 
 .contact-left input,
 .contact-left textarea {
-  background: #5f6266;
-  border: 1px solid whitesmoke;
-  color: #131010;
+  background: #ffffff; 
+  border: 1px solid #ccc; 
+  color: #000; 
   padding: 12px;
   margin-bottom: 1rem;
   font-size: 0.95rem;
   border-radius: 6px;
-  transition: border-color 0.3s;
+  transition: all 0.3s ease;
 }
 
+/* ✨ Focus effect */
 .contact-left input:focus,
 .contact-left textarea:focus {
   outline: none;
-  border-color: #1565c0;
-  background: #fdfcfc;
+  border-color: #1565c0; 
+  box-shadow: 0 0 8px rgba(21, 101, 192, 0.3); 
+  background: #ffffff;
 }
 
+/* 💙 Submit button */
 .contact-left button {
   background-color: #1565c0;
   border: none;
@@ -77,6 +82,7 @@
   background-color: #0d47a1;
 }
 
+/* 💬 Right Section (Info) */
 .contact-right {
   flex: 0.6;
   display: flex;
@@ -96,6 +102,7 @@
   font-size: 0.9rem;
 }
 
+/* 🌐 Social icons */
 .social-icons a {
   color: #1565c0;
   margin-right: 1rem;
@@ -107,7 +114,7 @@
   color: #0d47a1;
 }
 
-/* 📱 Responsive design */
+/* 📱 Responsive Design */
 @media (max-width: 768px) {
   .contact-card {
     flex-direction: column;
