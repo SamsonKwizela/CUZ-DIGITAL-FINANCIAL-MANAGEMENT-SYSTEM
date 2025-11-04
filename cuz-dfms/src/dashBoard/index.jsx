@@ -11,6 +11,8 @@ import {
   IconSwitchHorizontal,
 } from "@tabler/icons-react";
 import { Code, Group } from "@mantine/core";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 // import { MantineLogo } from "@mantinex/mantine-logo";
 import classes from "./dashBoard.module.css";
 
@@ -26,6 +28,13 @@ const data = [
 
 export function Dashboard() {
   const [active, setActive] = useState("Billing");
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   const links = data.map((item) => (
     <a
@@ -66,7 +75,10 @@ export function Dashboard() {
         <a
           href="#"
           className={classes.link}
-          onClick={(event) => event.preventDefault()}
+          onClick={(event) => {
+            event.preventDefault();
+            handleLogout();
+          }}
         >
           <IconLogout className={classes.linkIcon} stroke={1.5} />
           <span>Logout</span>

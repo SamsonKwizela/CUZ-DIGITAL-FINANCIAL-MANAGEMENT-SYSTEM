@@ -13,55 +13,56 @@ import {
 import classes from "./Login.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
 
 export function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
 
   const loginUser = () => {
-  setLoading(true);
+    setLoading(true);
 
-  fetch("http://localhost:8000/cuz/bank/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email, password }),
-  })
-    .then(async (response) => {
-      const data = await response.json();
-      
-      if (response.ok) {
-        // Success response (status 200-299)
-        console.log("Login successful:", data);
-        
-        // Store user data and token
-        if (data.token) {
-          localStorage.setItem('token', data.token);
-          localStorage.setItem('user', JSON.stringify(data.user));
+    fetch("http://localhost:8000/cuz/bank/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    })
+      .then(async (response) => {
+        const data = await response.json();
+
+        if (response.ok) {
+          // Success response (status 200-299)
+          console.log("Login successful:", data);
+
+          // Store user data and token using context
+          if (data.token) {
+            login(data.token); // This will store the token and set authentication state
+            localStorage.setItem("user", JSON.stringify(data.user));
+          }
+
+          // Navigate to overview (this will happen automatically due to PublicRoute redirect)
+          navigate("/overview");
+        } else {
+          // Error response (status 400-599)
+          console.error("Login failed:", data.error || data.message);
+
+          // Show error to user (you might want to set an error state)
+          alert(data.error || "Login failed. Please try again.");
         }
-        
-        // Navigate to overview
-        navigate("/overview");
-        
-      } else {
-        // Error response (status 400-599)
-        console.error("Login failed:", data.error || data.message);
-        
-        // Show error to user (you might want to set an error state)
-        alert(data.error || "Login failed. Please try again.");
-      }
-    })
-    .catch((error) => {
-      console.error("Network error:", error.message);
-      alert("Network error. Please check your connection and try again.");
-    })
-    .finally(() => {
-      setLoading(false);
-    });
-};
+      })
+      .catch((error) => {
+        console.error("Network error:", error.message);
+        alert("Network error. Please check your connection and try again.");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   return (
     <div className={classes.background}>
@@ -85,7 +86,7 @@ export function Login() {
             required
             radius="md"
             value={email}
-            onChange={(e) => setEmail(e.target.value)} 
+            onChange={(e) => setEmail(e.target.value)}
           />
           <PasswordInput
             label="Password"
@@ -94,7 +95,7 @@ export function Login() {
             mt="md"
             radius="md"
             value={password}
-            onChange={(e) => setPassword(e.target.value)} 
+            onChange={(e) => setPassword(e.target.value)}
           />
           <Group justify="space-between" mt="lg">
             <Checkbox label="Remember me" />
@@ -107,7 +108,7 @@ export function Login() {
             mt="xl"
             radius="md"
             onClick={loginUser}
-            loading={loading} 
+            loading={loading}
           >
             Sign in
           </Button>

@@ -10,23 +10,96 @@ import { ChooseAccountType } from "./register/ChooseAccountType";
 import { StudentAccountRegister } from "./register/StudentAccountRegister";
 import AuthStepper from "./auth/AuthStepper";
 import { Dashboard } from "./dashBoard/index.jsx";
+import { AuthProvider } from "./contexts/AuthContext";
+import { ProtectedRoute, PublicRoute } from "./components/ProtectedRoute";
+import { DashboardLayout, PublicLayout } from "./components/Layout";
 
 function App() {
   return (
     <MantineProvider>
-      <Navigation />
-      <Router>
-        <Routes>
-          <Route path="/" element={<Hero />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/contact" element={<ContactUs />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/choose-account" element={<ChooseAccountType />} />
-          <Route path="/register" element={<AuthStepper />} />
-          <Route path="/overview" element={<Dashboard />} />
-          <Route path="/contact" element={<ContactUs />} />
-        </Routes>
-      </Router>
+      <AuthProvider>
+        <Router>
+          <Routes>
+            {/* Public routes - show navigation bar */}
+            <Route
+              path="/"
+              element={
+                <PublicLayout>
+                  <Navigation />
+                  <Hero />
+                </PublicLayout>
+              }
+            />
+            <Route
+              path="/contact"
+              element={
+                <PublicLayout>
+                  <Navigation />
+                  <ContactUs />
+                </PublicLayout>
+              }
+            />
+
+            {/* Auth routes - redirect to dashboard if already logged in */}
+            <Route
+              path="/login"
+              element={
+                <PublicRoute>
+                  <PublicLayout>
+                    <Navigation />
+                    <Login />
+                  </PublicLayout>
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/forgot-password"
+              element={
+                <PublicRoute>
+                  <PublicLayout>
+                    <Navigation />
+                    <ForgotPassword />
+                  </PublicLayout>
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/choose-account"
+              element={
+                <PublicRoute>
+                  <PublicLayout>
+                    <Navigation />
+                    <ChooseAccountType />
+                  </PublicLayout>
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <PublicRoute>
+                  <PublicLayout>
+                    <Navigation />
+                    <AuthStepper />
+                  </PublicLayout>
+                </PublicRoute>
+              }
+            />
+
+            {/* Protected routes - no navigation bar, require authentication */}
+            <Route
+              path="/overview"
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout>
+                    <Dashboard />
+                  </DashboardLayout>
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </Router>
+      </AuthProvider>
     </MantineProvider>
   );
 }
