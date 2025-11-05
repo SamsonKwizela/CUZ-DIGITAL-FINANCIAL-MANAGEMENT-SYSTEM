@@ -15,22 +15,34 @@ export const useAuth = () => {
 // AuthProvider component
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
+  const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // Check for existing token on component mount
   useEffect(() => {
     const storedToken = localStorage.getItem("authToken");
-    if (storedToken) {
+    const storedUser = localStorage.getItem("user");
+    if (storedToken && storedUser) {
       setToken(storedToken);
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+        setUser(null);
+      }
       setIsAuthenticated(true);
     }
     setLoading(false);
   }, []);
 
   // Login function
-  const login = (userToken) => {
+  const login = (userToken, userData = null) => {
     localStorage.setItem("authToken", userToken);
+    if (userData) {
+      localStorage.setItem("user", JSON.stringify(userData));
+      setUser(userData);
+    }
     setToken(userToken);
     setIsAuthenticated(true);
   };
@@ -38,7 +50,9 @@ export const AuthProvider = ({ children }) => {
   // Logout function
   const logout = () => {
     localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
     setToken(null);
+    setUser(null);
     setIsAuthenticated(false);
   };
 
@@ -61,6 +75,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     getToken,
     checkAuth,
+    user,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

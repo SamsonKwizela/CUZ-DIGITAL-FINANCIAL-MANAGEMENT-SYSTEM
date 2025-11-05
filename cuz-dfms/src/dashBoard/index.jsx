@@ -39,11 +39,11 @@ const data = [
 
 export function Dashboard() {
   const [active, setActive] = useState("Billing");
-  const { logout, token } = useAuth();
+  const { logout, token, user } = useAuth();
   const navigate = useNavigate();
   const [opened, { toggle, close }] = useDisclosure(false);
 
-  console.log("Dashboard token:", token);
+  console.log("Dashboard user:", user);
   const handleLogout = () => {
     logout();
     navigate("/login");
@@ -75,6 +75,7 @@ export function Dashboard() {
             Forever Trust Bank
           </Text>
           <Group gap="md" className={classes.rightHeaderGroup}>
+            <Text>Welcome, {user?.user?.name}</Text>
             <IconBellRinging size={20} className={classes.notificationIcon} />
             <Avatar
               src={null}

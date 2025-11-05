@@ -63,9 +63,8 @@ export function Login() {
           console.log("Login successful:", data);
 
           // Store user data and token using context
-          if (data.token) {
-            login(data.token); // This will store the token and set authentication state
-            localStorage.setItem("user", JSON.stringify(data.user));
+          if (data && data.token) {
+            login(data.token, data.user); // Pass token and user data separately
           }
 
           // Navigate to overview (this will happen automatically due to PublicRoute redirect)

@@ -205,6 +205,50 @@
   min-height: 100vh;
 }
 
+/* User info card */
+.userInfoCard {
+  background-color: var(--mantine-color-body);
+  border: 1px solid
+    light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+  border-radius: var(--mantine-radius-md);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Welcome text in header */
+.welcomeText {
+  color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-1));
+  font-weight: 500;
+}
+
+/* Bank name styling */
+.bankName {
+  color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-dark-0));
+  font-size: 1.4rem;
+  line-height: 1.2;
+}
+
+.bankNameLink {
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+  padding: var(--mantine-spacing-xs) var(--mantine-spacing-sm);
+  border-radius: var(--mantine-radius-sm);
+}
+
+.bankNameLink:hover {
+  background-color: light-dark(
+    var(--mantine-color-gray-0),
+    var(--mantine-color-dark-6)
+  );
+}
+
+/* Right header group */
+.rightHeaderGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--mantine-spacing-md);
+}
+
 /* Mobile drawer styles */
 .mobileDrawer .mantine-Drawer-content {
   background-color: var(--mantine-color-body);
