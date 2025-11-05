@@ -9,10 +9,21 @@ import {
   IconReceipt2,
   IconSettings,
   IconSwitchHorizontal,
+  IconMenu2,
 } from "@tabler/icons-react";
-import { Code, Group } from "@mantine/core";
+import {
+  Code,
+  Group,
+  Avatar,
+  Burger,
+  Drawer,
+  Stack,
+  Box,
+  Text,
+} from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { useDisclosure } from "@mantine/hooks";
 // import { MantineLogo } from "@mantinex/mantine-logo";
 import classes from "./dashBoard.module.css";
 
@@ -30,6 +41,7 @@ export function Dashboard() {
   const [active, setActive] = useState("Billing");
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const [opened, { toggle, close }] = useDisclosure(false);
 
   const handleLogout = () => {
     logout();
@@ -45,6 +57,7 @@ export function Dashboard() {
       onClick={(event) => {
         event.preventDefault();
         setActive(item.label);
+        close(); // Close mobile drawer when link is clicked
       }}
     >
       <item.icon className={classes.linkIcon} stroke={1.5} />
@@ -53,37 +66,137 @@ export function Dashboard() {
   ));
 
   return (
-    <nav className={classes.navbar}>
-      <div className={classes.navbarMain}>
-        <Group className={classes.header} justify="space-between">
-          {/* <MantineLogo size={28} /> */}
-          <Code fw={700}>v3.1.2</Code>
+    <div className={classes.dashboardContainer}>
+      {/* Header bar for mobile with burger and avatar */}
+      <div className={classes.mobileHeader}>
+        <Group justify="space-between" className={classes.mobileHeaderContent}>
+          <Group>
+            <Burger
+              opened={opened}
+              onClick={toggle}
+              className={classes.burger}
+              size="sm"
+            />
+            <Text size="lg" fw={600}>
+              Dashboard
+            </Text>
+          </Group>
+          <Avatar
+            src={null}
+            alt="User avatar"
+            radius="xl"
+            className={classes.avatar}
+            size="md"
+          />
         </Group>
-        {links}
       </div>
 
-      <div className={classes.footer}>
-        <a
-          href="#"
-          className={classes.link}
-          onClick={(event) => event.preventDefault()}
-        >
-          <IconSwitchHorizontal className={classes.linkIcon} stroke={1.5} />
-          <span>Change account</span>
-        </a>
+      {/* Desktop Sidebar */}
+      <nav className={classes.navbar}>
+        <div className={classes.navbarMain}>
+          <Group className={classes.header} justify="space-between">
+            {/* <MantineLogo size={28} /> */}
+            <Code fw={700}>v3.1.2</Code>
+            <Avatar
+              src={null}
+              alt="User avatar"
+              radius="xl"
+              className={classes.desktopAvatar}
+              size="sm"
+            />
+          </Group>
+          {links}
+        </div>
 
-        <a
-          href="#"
-          className={classes.link}
-          onClick={(event) => {
-            event.preventDefault();
-            handleLogout();
-          }}
-        >
-          <IconLogout className={classes.linkIcon} stroke={1.5} />
-          <span>Logout</span>
-        </a>
+        <div className={classes.footer}>
+          <a
+            href="#"
+            className={classes.link}
+            onClick={(event) => event.preventDefault()}
+          >
+            <IconSwitchHorizontal className={classes.linkIcon} stroke={1.5} />
+            <span>Change account</span>
+          </a>
+
+          <a
+            href="#"
+            className={classes.link}
+            onClick={(event) => {
+              event.preventDefault();
+              handleLogout();
+            }}
+          >
+            <IconLogout className={classes.linkIcon} stroke={1.5} />
+            <span>Logout</span>
+          </a>
+        </div>
+      </nav>
+
+      {/* Mobile Drawer */}
+      <Drawer
+        opened={opened}
+        onClose={close}
+        size="xs"
+        padding="md"
+        title="Menu"
+        className={classes.mobileDrawer}
+      >
+        <Stack gap="xs">
+          {data.map((item) => (
+            <a
+              key={`mobile-${item.label}`}
+              className={classes.mobileLink}
+              data-active={item.label === active || undefined}
+              href={item.link}
+              onClick={(event) => {
+                event.preventDefault();
+                setActive(item.label);
+                close();
+              }}
+            >
+              <item.icon className={classes.linkIcon} stroke={1.5} />
+              <Text>{item.label}</Text>
+            </a>
+          ))}
+
+          <div className={classes.mobileDivider} />
+
+          <a
+            className={classes.mobileLink}
+            href="#"
+            onClick={(event) => {
+              event.preventDefault();
+              close();
+            }}
+          >
+            <IconSwitchHorizontal className={classes.linkIcon} stroke={1.5} />
+            <Text>Change account</Text>
+          </a>
+
+          <a
+            className={classes.mobileLink}
+            href="#"
+            onClick={(event) => {
+              event.preventDefault();
+              handleLogout();
+              close();
+            }}
+          >
+            <IconLogout className={classes.linkIcon} stroke={1.5} />
+            <Text>Logout</Text>
+          </a>
+        </Stack>
+      </Drawer>
+
+      {/* Main content area */}
+      <div className={classes.content}>
+        <Box p="md">
+          <Text size="xl" fw={600} mb="md">
+            {active}
+          </Text>
+          <Text>This is the {active.toLowerCase()} section content.</Text>
+        </Box>
       </div>
-    </nav>
+    </div>
   );
 }
