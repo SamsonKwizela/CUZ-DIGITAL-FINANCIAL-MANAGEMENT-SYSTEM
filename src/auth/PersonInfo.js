@@ -13,8 +13,6 @@ import "@mantine/dates/styles.css";
 import { Radio } from "@mantine/core";
 
 const PersonInfo = ({ form }) => {
-  const [value, setValue] = useState(null);
-
   return (
     <Container size={600}>
       <TextInput
@@ -22,39 +20,50 @@ const PersonInfo = ({ form }) => {
         placeholder="Samson Kwizela"
         required
         size="md"
+        {...form.getInputProps("fullName")}
       />
 
       <TextInput
         withAsterisk
         label="Email"
         placeholder="your@email.com"
-        key={form.key("email")}
-        {...form.getInputProps("email")}
         size="md"
+        {...form.getInputProps("email")}
       />
 
-      <NumberInput label="Phone" placeholder="+260" size="md" />
+      <TextInput 
+        label="Phone" 
+        placeholder="+260" 
+        size="md" 
+        required
+        {...form.getInputProps("phone")}
+      />
 
       <DatePickerInput
         label="Date of Birth"
         placeholder="Select your D.O.B"
-        icon={<IconCalendar size={18} />}
-        value={value}
-        onChange={setValue}
+        leftSection={<IconCalendar size={18} />}
         valueFormat="DD/MM/YYYY"
         required
         withAsterisk
         maxDate={new Date()}
         size="md"
+        {...form.getInputProps("dateOfBirth")}
       />
 
-      <TextInput label="Address" placeholder="Lusaka" required size="md" />
+      <TextInput 
+        label="Address" 
+        placeholder="Lusaka" 
+        required 
+        size="md" 
+        {...form.getInputProps("address")}
+      />
 
       <Radio.Group
-        name="gender"
         label="Gender"
         description="Select your gender"
         withAsterisk
+        {...form.getInputProps("gender")}
       >
         <Group mt="xs">
           <Radio value="male" label="Male" />
