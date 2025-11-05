@@ -9,89 +9,153 @@ import {
   Text,
   TextInput,
   Title,
+  Box,
+  Stack,
+  Alert,
 } from "@mantine/core";
+import { useForm } from "@mantine/form";
 import classes from "./Login.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import {
+  initialLoginValues,
+  loginValidationSchema,
+} from "../utils/SchemaValidation/login";
+import { loginUser } from "../services/authService";
 
 export function Login() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false); 
+  const { login } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const loginUser = () => {
-    setLoading(true); // 
+  const form = useForm({
+    initialValues: initialLoginValues,
+    validate: loginValidationSchema,
+    validateInputOnBlur: true,
+  });
 
-    fetch("http://localhost:9000/cuz/bank/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Login successful:", data);
-        navigate("/overview");
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      })
-      .finally(() => {
-        setLoading(false); 
-      });
+  const handleSubmit = async (values) => {
+    setLoading(true);
+    setError("");
+    const result = await loginUser(values.email, values.password);
+    if (result.success) {
+      if (result.token) {
+        login(result.token, result.user);
+      }
+      navigate("/overview");
+    } else {
+      setError(result.error);
+    }
+    setLoading(false);
   };
 
   return (
     <div className={classes.background}>
-      <Container size={420} my={40}>
-        <Title ta="center" className={classes.title}>
-          Welcome to Forever Trust Bank
-        </Title>
-        <p className="Motto-paragraph">Reliable. Always with you</p>
+      <Container size="xs" className={classes.container}>
+        <Box className={classes.loginWrapper}>
+          {/* Bank Logo/Icon Section */}
+          <Box className={classes.logoSection}>
+            <Title className={classes.title}>Forever Trust Bank</Title>
+            <Text className={classes.motto}>Reliable. Always with you</Text>
+          </Box>
 
-        <Text className={classes.subtitle}>
-          Do not have an account yet?{" "}
-          <Anchor component={Link} to="/choose-account">
-            Create account
-          </Anchor>
-        </Text>
+          {/* Login Form */}
+          <Paper className={classes.loginForm} shadow="xl" radius="lg" p={32}>
+            <form onSubmit={form.onSubmit(handleSubmit)}>
+              <Stack gap="md">
+                <div className={classes.formHeader}>
+                  <Title order={2} className={classes.formTitle}>
+                    Welcome Back
+                  </Title>
+                  <Text className={classes.formSubtitle}>
+                    Sign in to access your account
+                  </Text>
+                </div>
 
-        <Paper withBorder shadow="sm" p={22} mt={30} radius="md">
-          <TextInput
-            label="Email"
-            placeholder="you@mantine.dev"
-            required
-            radius="md"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)} 
-          />
-          <PasswordInput
-            label="Password"
-            placeholder="Your password"
-            required
-            mt="md"
-            radius="md"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)} 
-          />
-          <Group justify="space-between" mt="lg">
-            <Checkbox label="Remember me" />
-            <Link to="/forgot-password" style={{ fontSize: "0.9rem" }}>
-              Forgot password?
-            </Link>
-          </Group>
-          <Button
-            fullWidth
-            mt="xl"
-            radius="md"
-            onClick={loginUser}
-            loading={loading} 
-          >
-            Sign in
-          </Button>
-        </Paper>
+                {error && (
+                  <Alert
+                    color="red"
+                    variant="light"
+                    className={classes.errorAlert}
+                  >
+                    {error}
+                  </Alert>
+                )}
+
+                <TextInput
+                  label="Email Address"
+                  placeholder="Enter your email"
+                  size="md"
+                  radius="md"
+                  className={classes.input}
+                  leftSection="📧"
+                  {...form.getInputProps("email")}
+                />
+
+                <PasswordInput
+                  label="Password"
+                  placeholder="Enter your password"
+                  size="md"
+                  radius="md"
+                  className={classes.input}
+                  leftSection="🔒"
+                  {...form.getInputProps("password")}
+                />
+
+                <Group justify="space-between" mt="md">
+                  <Checkbox
+                    label="Remember me"
+                    size="sm"
+                    className={classes.checkbox}
+                    {...form.getInputProps("rememberMe", { type: "checkbox" })}
+                  />
+                  <Anchor
+                    component={Link}
+                    to="/forgot-password"
+                    className={classes.forgotLink}
+                    size="sm"
+                  >
+                    Forgot password?
+                  </Anchor>
+                </Group>
+
+                <Button
+                  fullWidth
+                  size="md"
+                  radius="md"
+                  type="submit"
+                  loading={loading}
+                  className={classes.loginButton}
+                  mt="lg"
+                >
+                  {loading ? "Signing in..." : "Sign In"}
+                </Button>
+
+                <Box className={classes.signupSection}>
+                  <Text size="sm" className={classes.signupText}>
+                    Don't have an account?{" "}
+                    <Anchor
+                      component={Link}
+                      to="/choose-account"
+                      className={classes.signupLink}
+                    >
+                      Create Account
+                    </Anchor>
+                  </Text>
+                </Box>
+              </Stack>
+            </form>
+          </Paper>
+
+          {/* Security Notice */}
+          <Box className={classes.securityNotice}>
+            <Text size="xs" className={classes.securityText}>
+              🔒 Your information is protected with bank-level security
+            </Text>
+          </Box>
+        </Box>
       </Container>
     </div>
   );

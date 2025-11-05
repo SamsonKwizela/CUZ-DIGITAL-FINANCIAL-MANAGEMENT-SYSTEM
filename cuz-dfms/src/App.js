@@ -1,49 +1,107 @@
-
-import './App.css';
-import { MantineProvider } from '@mantine/core';
-import { Login } from './auth/Login';
-import { Hero } from './landingPage/Hero';
+import "./App.css";
+import { MantineProvider } from "@mantine/core";
+import { Login } from "./auth/Login";
+import { Hero } from "./landingPage/Hero";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Navigation } from './component/NavBar';
+import { Navigation } from "./component/NavBar";
 import ContactUs from "./landingPage/contactUs";
-import { ForgotPassword } from './auth/ForgotPassword';
-import { ChooseAccountType } from './register/ChooseAccountType';
-import { StudentAccountRegister } from './register/StudentAccountRegister';
-import { Overview } from './dashBoard/overview';
-import AuthStepper from './auth/AuthStepper';
-
-
+import { ForgotPassword } from "./auth/ForgotPassword";
+import { ChooseAccountType } from "./register/ChooseAccountType";
+import { StudentAccountRegister } from "./register/StudentAccountRegister";
+import AuthStepper from "./auth/AuthStepper";
+import { Dashboard } from "./dashBoard/index.jsx";
+import { AuthProvider } from "./contexts/AuthContext";
+import { ProtectedRoute, PublicRoute } from "./components/ProtectedRoute";
+import { DashboardLayout, PublicLayout } from "./components/Layout";
 
 function App() {
-
-
-
   return (
-    
-  <MantineProvider>
-    <Navigation />
-    <Router>
-      <Routes>
-        <Route path = "/" element={<Hero />} />
-        <Route path = "/login" element={<Login />} />
-        <Route path = "/contact" element={<ContactUs />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/choose-account" element={<ChooseAccountType />} />
-        <Route path="/register" element={<AuthStepper />} />
-        <Route path="/overview" element={<Overview />} />
-         <Route path="/contact" element={<ContactUs />} />
+    <MantineProvider>
+      <AuthProvider>
+        <Router>
+          <Routes>
+            {/* Public routes - show navigation bar */}
+            <Route
+              path="/"
+              element={
+                <PublicLayout>
+                  <Navigation />
+                  <Hero />
+                </PublicLayout>
+              }
+            />
+            <Route
+              path="/contact"
+              element={
+                <PublicLayout>
+                  <Navigation />
+                  <ContactUs />
+                </PublicLayout>
+              }
+            />
 
+            {/* Auth routes - redirect to dashboard if already logged in */}
+            <Route
+              path="/login"
+              element={
+                <PublicRoute>
+                  <PublicLayout>
+                    <Navigation />
+                    <Login />
+                  </PublicLayout>
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/forgot-password"
+              element={
+                <PublicRoute>
+                  <PublicLayout>
+                    <Navigation />
+                    <ForgotPassword />
+                  </PublicLayout>
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/choose-account"
+              element={
+                <PublicRoute>
+                  <PublicLayout>
+                    <Navigation />
+                    <ChooseAccountType />
+                  </PublicLayout>
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <PublicRoute>
+                  <PublicLayout>
+                    <Navigation />
+                    <AuthStepper />
+                  </PublicLayout>
+                </PublicRoute>
+              }
+            />
 
-      </Routes>
-    </Router>
-      
-
-
-    
-    
-  </MantineProvider>
-
+            {/* Protected routes - no navigation bar, require authentication */}
+            <Route
+              path="/overview"
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout>
+                    <Dashboard />
+                  </DashboardLayout>
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </Router>
+      </AuthProvider>
+    </MantineProvider>
   );
 }
 
-export default App; 
+export default App;
