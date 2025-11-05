@@ -23,7 +23,40 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  margin-left: 300px; /* Account for sidebar width */
+  position: relative;
+}
+
+/* Position bank name at far left, aligned with sidebar */
+.bankNameLink {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+  padding: var(--mantine-spacing-xs) var(--mantine-spacing-md);
+  border-radius: var(--mantine-radius-sm);
+  margin-left: var(--mantine-spacing-xl);
+}
+
+.bankNameLink:hover {
+  background-color: light-dark(
+    var(--mantine-color-gray-0),
+    var(--mantine-color-dark-6)
+  );
+  transform: translateY(-1px);
+}
+
+.bankName {
+  color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-dark-0));
+  font-size: 1.4rem;
+  line-height: 1.2;
+}
+
+.rightHeaderGroup {
+  margin-left: auto;
+  margin-right: var(--mantine-spacing-xl);
 }
 
 .headerTitle {

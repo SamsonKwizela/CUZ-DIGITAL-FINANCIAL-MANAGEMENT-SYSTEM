@@ -21,7 +21,7 @@ import {
   Box,
   Text,
 } from "@mantine/core";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useDisclosure } from "@mantine/hooks";
 // import { MantineLogo } from "@mantinex/mantine-logo";
@@ -70,15 +70,13 @@ export function Dashboard() {
       {/* Desktop Header - visible on large screens */}
       <header className={classes.desktopHeader}>
         <div className={classes.desktopHeaderContent}>
-          <Group>
+          <Text size="xl" fw={700} className={classes.bankName}>
+            Forever Trust Bank
+          </Text>
+          <Group gap="md" className={classes.rightHeaderGroup}>
             <Code fw={700} className={classes.version}>
               v3.1.2
             </Code>
-            <Text size="xl" fw={600} className={classes.headerTitle}>
-              Forever Trust Bank - Dashboard
-            </Text>
-          </Group>
-          <Group gap="md">
             <IconBellRinging size={20} className={classes.notificationIcon} />
             <Avatar
               src={null}
