@@ -25,25 +25,36 @@ import {
   Box,
   Text,
 } from "@mantine/core";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation, Outlet } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useDisclosure } from "@mantine/hooks";
 // import { MantineLogo } from "@mantinex/mantine-logo";
 import classes from "./dashBoard.module.css";
 
 const data = [
-  { link: "", label: "Balance", icon: IconLibrary },
-  { link: "", label: "Pay & Transfer", icon: IconTransfer },
-  { link: "", label: "Add beneficiary ", icon: IconUserPlus },
-  { link: "", label: "Notifications", icon: IconBellRinging },
-  { link: "", label: " receipts", icon: IconReceipt },
+  { link: "balance", label: "Balance", icon: IconLibrary },
+  { link: "transfer", label: "Pay & Transfer", icon: IconTransfer },
+  { link: "beneficiary", label: "Add Beneficiary", icon: IconUserPlus },
+  { link: "notifications", label: "Notifications", icon: IconBellRinging },
+  { link: "receipts", label: "Receipts", icon: IconReceipt },
 ];
 
 export function Dashboard() {
-  const [active, setActive] = useState("Billing");
   const { logout, token, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [opened, { toggle, close }] = useDisclosure(false);
+
+  // Get active section from current URL
+  const getActiveSection = () => {
+    const path = location.pathname;
+    if (path.endsWith("/balance")) return "Balance";
+    if (path.endsWith("/transfer")) return "Pay & Transfer";
+    if (path.endsWith("/beneficiary")) return "Add Beneficiary";
+    if (path.endsWith("/notifications")) return "Notifications";
+    if (path.endsWith("/receipts")) return "Receipts";
+    return "Balance"; // default
+  };
 
   console.log("Dashboard user:", user?.name);
   const handleLogout = () => {
@@ -52,20 +63,16 @@ export function Dashboard() {
   };
 
   const links = data.map((item) => (
-    <a
+    <Link
+      to={item.link}
       className={classes.link}
-      data-active={item.label === active || undefined}
-      href={item.link}
+      data-active={item.label === getActiveSection() || undefined}
       key={item.label}
-      onClick={(event) => {
-        event.preventDefault();
-        setActive(item.label);
-        close(); // Close mobile drawer when link is clicked
-      }}
+      onClick={() => close()}
     >
       <item.icon className={classes.linkIcon} stroke={1.5} />
       <span>{item.label}</span>
-    </a>
+    </Link>
   ));
 
   return (
@@ -166,20 +173,16 @@ export function Dashboard() {
       >
         <Stack gap="xs">
           {data.map((item) => (
-            <a
+            <Link
               key={`mobile-${item.label}`}
+              to={item.link}
               className={classes.mobileLink}
-              data-active={item.label === active || undefined}
-              href={item.link}
-              onClick={(event) => {
-                event.preventDefault();
-                setActive(item.label);
-                close();
-              }}
+              data-active={item.label === getActiveSection() || undefined}
+              onClick={() => close()}
             >
               <item.icon className={classes.linkIcon} stroke={1.5} />
               <Text>{item.label}</Text>
-            </a>
+            </Link>
           ))}
 
           <div className={classes.mobileDivider} />
@@ -213,12 +216,7 @@ export function Dashboard() {
 
       {/* Main content area */}
       <div className={classes.content}>
-        <Box p="md">
-          <Text size="xl" fw={600} mb="md">
-            {active}
-          </Text>
-          <Text>This is the {active.toLowerCase()} section content.</Text>
-        </Box>
+        <Outlet />
       </div>
     </div>
   );

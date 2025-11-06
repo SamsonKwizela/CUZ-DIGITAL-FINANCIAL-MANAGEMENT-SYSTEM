@@ -44,7 +44,7 @@ export function Login() {
       if (result.token) {
         login(result.token, result.user);
       }
-      navigate("/overview");
+      navigate("/overview/balance");
     } else {
       setError(result.error);
     }
