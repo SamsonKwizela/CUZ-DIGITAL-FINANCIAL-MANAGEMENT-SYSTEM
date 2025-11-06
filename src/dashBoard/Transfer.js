@@ -1,6 +1,7 @@
 import {
   Button,
   Container,
+  Modal,
   NumberInput,
   Stack,
   Text,
@@ -11,8 +12,10 @@ import { useForm } from "@mantine/form";
 import React from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { transaction } from "../services/authService";
+import { useDisclosure } from "@mantine/hooks";
 
 const Transfer = () => {
+  const [opened, { open, close }] = useDisclosure(false);
   const accountNumber = localStorage.getItem("accountNumber");
   console.log("Account Number from localStorage:", accountNumber);
   const form = useForm({
@@ -72,9 +75,21 @@ const Transfer = () => {
       <Text size="xl" c="black" mt="lg">
         Transfer
       </Text>
-      <Container size={600}>
+
+      <Modal
+        opened={opened}
+        onClose={close}
+        title="Tranfer Money"
+        centered
+        size="md"
+      >
         <Stack gap="sm">
-          <form onSubmit={form.onSubmit((values) => sendMoney(values))}>
+          <form
+            onSubmit={form.onSubmit((values) => {
+              sendMoney(values);
+              close();
+            })}
+          >
             <TextInput
               label="Tranfer To"
               placeholder="014525168"
@@ -100,7 +115,12 @@ const Transfer = () => {
             </Button>
           </form>
         </Stack>
-      </Container>
+      </Modal>
+
+      <Button variant="default" onClick={open}>
+        Tranfer Money
+      </Button>
+      <Container size={600}></Container>
     </>
   );
 };
