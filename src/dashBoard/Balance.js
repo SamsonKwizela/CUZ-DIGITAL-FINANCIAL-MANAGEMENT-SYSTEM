@@ -13,6 +13,7 @@ import { IconEye, IconEyeOff, IconRefresh } from "@tabler/icons-react";
 import { useAuth } from "../contexts/AuthContext";
 import { accountBalance } from "../services/authService";
 import Loading from "../component/Loading";
+import { formatAmount } from "../utils/schemaValidation/src/utils/src/utils/Helpers";
 
 const Balance = () => {
   const { user } = useAuth();
@@ -55,11 +56,11 @@ const Balance = () => {
         </Group>
 
         <Text size="2.5rem" fw={700} c="blue" mb="xs">
-          ZMW {balanceData?.account?.currentBalance}
+          {formatAmount(balanceData?.account?.currentBalance)}
         </Text>
 
         <Text size="sm" c="dimmed">
-          Available: {balanceData?.account?.currentBalance}
+          Available: {formatAmount(balanceData?.account?.currentBalance)}
         </Text>
 
         <Group mt="md">
