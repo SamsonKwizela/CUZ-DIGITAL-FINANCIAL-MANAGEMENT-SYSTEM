@@ -8,16 +8,11 @@ import {
   Badge,
   ActionIcon,
   Divider,
-  Grid,
-  Paper,
   Box,
-  Alert,
 } from "@mantine/core";
 import {
-  IconEye,
   IconRefresh,
   IconWallet,
-  IconTrendingUp,
 } from "@tabler/icons-react";
 import moment from "moment";
 import { useAuth } from "../contexts/AuthContext";
@@ -27,7 +22,6 @@ import { formatAmount } from "../utils/schemaValidation/src/utils/src/utils/Help
 import { toast } from "react-toastify";
 
 const Balance = () => {
-  const { user } = useAuth();
   const [balanceData, setBalanceData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
