@@ -10,12 +10,8 @@ import {
   Divider,
   Box,
 } from "@mantine/core";
-import {
-  IconRefresh,
-  IconWallet,
-} from "@tabler/icons-react";
+import { IconRefresh, IconWallet } from "@tabler/icons-react";
 import moment from "moment";
-import { useAuth } from "../contexts/AuthContext";
 import { accountBalance } from "../services/authService";
 import Loading from "../component/Loading";
 import { formatAmount } from "../utils/schemaValidation/src/utils/src/utils/Helpers";
@@ -83,15 +79,13 @@ const Balance = () => {
           <Box>
             <Group align="center" gap="xs" mb="xs">
               <IconWallet size="1.2rem" color="#228be6" />
-              <Text size="sm" fw={500} c="black">
+              <Text size="sm" fw={500} c="black" tt="capitalize">
                 {balanceData?.account?.accountType || "Savings"} Account
               </Text>
             </Group>
             <Text size="sm" c="dimmed" fw={500}>
-              <span style={{ color: "black" }}>
-                Account:
-              </span>
-                  {balanceData?.account?.accountNumber || "****1234"}
+              <span style={{ color: "black" }}>Account:</span>
+              {balanceData?.account?.accountNumber || "****1234"}
             </Text>
           </Box>
           <Badge
