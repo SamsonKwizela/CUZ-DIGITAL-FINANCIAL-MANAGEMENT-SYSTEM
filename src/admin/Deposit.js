@@ -191,14 +191,14 @@ const Deposit = () => {
 
                   <NumberInput
                     label="Deposit Amount (ZMW)"
-                    placeholder="50000"
+                    placeholder="Enter amount (e.g., 50000)"
                     size="md"
                     radius="md"
                     leftSection={<IconCreditCard size="1.2rem" />}
                     description="Enter amount to deposit (minimum: ZMW 100)"
-                    min={100}
-                    max={1000000}
                     thousandSeparator=","
+                    allowNegative={false}
+                    allowDecimal={false}
                     {...form.getInputProps("amount")}
                   />
 
@@ -247,43 +247,6 @@ const Deposit = () => {
           <Grid.Col span={{ base: 12, md: 4 }}>
             <Stack spacing="md">
               {/* Quick Stats */}
-              <Card shadow="sm" padding="lg" radius="lg" withBorder>
-                <Group justify="space-between" align="center" mb="md">
-                  <Text fw={600} c="dark">
-                    Today's Summary
-                  </Text>
-                  <ThemeIcon size="sm" variant="light" color="green">
-                    <IconTrendingUp size="1rem" />
-                  </ThemeIcon>
-                </Group>
-
-                <Stack spacing="xs">
-                  <Group justify="space-between">
-                    <Text size="sm" c="dimmed">
-                      Total Deposits
-                    </Text>
-                    <Text size="sm" fw={600} c="green">
-                      RWF 2,450,000
-                    </Text>
-                  </Group>
-                  <Group justify="space-between">
-                    <Text size="sm" c="dimmed">
-                      Transactions
-                    </Text>
-                    <Text size="sm" fw={600}>
-                      47
-                    </Text>
-                  </Group>
-                  <Group justify="space-between">
-                    <Text size="sm" c="dimmed">
-                      Success Rate
-                    </Text>
-                    <Text size="sm" fw={600} c="green">
-                      99.2%
-                    </Text>
-                  </Group>
-                </Stack>
-              </Card>
 
               {/* Recent Deposits */}
               <Card shadow="sm" padding="lg" radius="lg" withBorder>
@@ -349,7 +312,7 @@ const Deposit = () => {
               >
                 <Text size="sm">
                   All deposits are processed instantly and notifications are
-                  sent to students automatically.
+                  sent automatically.
                 </Text>
               </Alert>
             </Stack>
