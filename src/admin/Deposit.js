@@ -37,6 +37,7 @@ import { useForm } from "@mantine/form";
 import { toast } from "react-toastify";
 import { depositFunds, getRecentDeposits } from "../services/authService";
 import { formatAmount } from "../schemaValidation/Helpers";
+import moment from "moment";
 
 const Deposit = () => {
   const [loading, setLoading] = useState(false);
@@ -91,7 +92,7 @@ const Deposit = () => {
         status: "completed",
       };
 
-    //   setRecentDeposits((prev) => [newDeposit, ...prev.slice(0, 4)]);
+      //   setRecentDeposits((prev) => [newDeposit, ...prev.slice(0, 4)]);
 
       toast.success(
         `Successfully deposited k ${values.amount.toLocaleString()} to ${
@@ -121,8 +122,6 @@ const Deposit = () => {
   React.useEffect(() => {
     fetchRecentDeposits();
   }, []);
-
-  
 
   return (
     <Box
@@ -339,7 +338,9 @@ const Deposit = () => {
                             {deposit.description}
                           </Text>
                           <Text size="xs" c="dimmed">
-                            {deposit.createdAt}
+                            {moment(deposit.createdAt).format(
+                              "DD MMM YYYY h:mm A"
+                            )}
                           </Text>
                         </Box>
                         <Box ta="right">
@@ -355,7 +356,7 @@ const Deposit = () => {
                             }
                             variant="light"
                           >
-                            {deposit.status}
+                            {deposit?.account?.type}
                           </Badge>
                         </Box>
                       </Group>
