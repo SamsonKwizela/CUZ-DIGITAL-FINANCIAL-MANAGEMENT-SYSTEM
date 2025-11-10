@@ -297,9 +297,9 @@ export function ContactUs() {
                         Email Us
                       </Text>
                       <Text size="sm" c="dimmed">
-                        support@forevertrustbank.rw
+                        rachealsamuelmilele15@gmail.com
                         <br />
-                        info@forevertrustbank.rw
+                        kwizelasamson@gmail.com
                       </Text>
                     </Box>
                   </Group>
