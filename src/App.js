@@ -12,7 +12,6 @@ import { Navigation } from "./component/NavBar";
 import ContactUs from "./landingPage/contactUs";
 import { ForgotPassword } from "./auth/ForgotPassword";
 import { ChooseAccountType } from "./register/ChooseAccountType";
-import { StudentAccountRegister } from "./register/StudentAccountRegister";
 import AuthStepper from "./auth/AuthStepper";
 import { Dashboard } from "./dashBoard/index.jsx";
 import Balance from "./dashBoard/Balance";
@@ -25,6 +24,9 @@ import Transfer from "./dashBoard/Transfer.js";
 import Beneficiary from "./dashBoard/Beneficiary.js";
 import Notifications from "./dashBoard/Notifications.js";
 import Receipts from "./dashBoard/Receipts.js";
+import Aboutus from "./landingPage/Aboutus.js";
+import Deposit from "./admin/Deposit.js";
+import ViewDeposits from "./admin/ViewDeposits.js";
 
 function App() {
   return (
@@ -60,6 +62,18 @@ function App() {
                   <PublicLayout>
                     <Navigation />
                     <Login />
+                  </PublicLayout>
+                </PublicRoute>
+              }
+            />
+
+            <Route
+              path="/about-us"
+              element={
+                <PublicRoute>
+                  <PublicLayout>
+                    <Navigation />
+                    <Aboutus />
                   </PublicLayout>
                 </PublicRoute>
               }
@@ -115,6 +129,8 @@ function App() {
               <Route path="beneficiary" element={<Beneficiary />} />
               <Route path="notifications" element={<Notifications />} />
               <Route path="receipts" element={<Receipts />} />
+              <Route path="deposit" element={<Deposit />} />
+              <Route path="deposits" element={<ViewDeposits />} />
             </Route>
           </Routes>
         </Router>

@@ -45,7 +45,12 @@ export function Login() {
       if (result.token) {
         login(result.token, result.user);
       }
-      navigate("/overview/balance");
+      // Check user type and route accordingly
+      if (result.user && result.user.type === "admin") {
+        navigate("/overview/deposit");
+      } else {
+        navigate("/overview/balance");
+      }
     } else {
       setError(result.error);
     }
@@ -53,14 +58,40 @@ export function Login() {
   };
 
   return (
-    <div className={classes.background}>
-      <Container size="xs" className={classes.container}>
+    <Box
+      style={{
+        position: "relative",
+        background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+        minHeight: "100vh",
+        overflow: "hidden",
+        marginTop: "-20px",
+      }}
+    >
+      {/* Background decorative elements */}
+      <Box
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: `
+            radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+            radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.3) 0%, transparent 50%)
+          `,
+          pointerEvents: "none",
+        }}
+      />
+
+      <Container
+        size="xs"
+        className={classes.container}
+        style={{ position: "relative", zIndex: 1 }}
+      >
         <Box className={classes.loginWrapper}>
           {/* Bank Logo/Icon Section */}
-          <Box className={classes.logoSection}>
-            <Title className={classes.title}>Forever Trust Bank</Title>
-            <Text className={classes.motto}>Reliable. Always with you</Text>
-          </Box>
+          <Box className={classes.logoSection}></Box>
 
           {/* Login Form */}
           <Paper className={classes.loginForm} shadow="xl" radius="lg" p={32}>
@@ -156,6 +187,6 @@ export function Login() {
           </Box>
         </Box>
       </Container>
-    </div>
+    </Box>
   );
 }
