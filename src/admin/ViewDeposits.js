@@ -14,12 +14,17 @@ import {
   Grid,
   Paper,
   Select,
+  TextInput,
+  DateInput,
 } from "@mantine/core";
 import {
   IconRefresh,
   IconInfoCircle,
   IconCoins,
   IconCalendar,
+  IconSearch,
+  IconUser,
+  IconCreditCard,
 } from "@tabler/icons-react";
 import { getDeposits } from "../services/authService";
 import { formatAmount } from "../schemaValidation/Helpers";
@@ -29,9 +34,9 @@ const ViewDeposits = () => {
   const [deposits, setDeposits] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState(null);
-  const [selectedDate, setSelectedDate] = React.useState(
-    moment().format("YYYY-MM-DD")
-  );
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const [selectedDate, setSelectedDate] = React.useState(null);
+  const [showDateFilter, setShowDateFilter] = React.useState(false);
 
   console.log("ViewDeposits deposits state:", deposits);
 
@@ -68,35 +73,76 @@ const ViewDeposits = () => {
     fetchDeposits();
   }, []);
 
-  // Filter deposits by selected date
-  const getDepositsForDate = (date) => {
-    return deposits.filter(
-      (deposit) => moment(deposit.createdAt).format("YYYY-MM-DD") === date
-    );
+  // Dynamic search filter function
+  const getFilteredDeposits = () => {
+    let filtered = deposits;
+
+    // Apply text search filter
+    if (searchTerm.trim()) {
+      const searchLower = searchTerm.toLowerCase().trim();
+      filtered = filtered.filter((deposit) => {
+        const userName = deposit.account?.user?.name?.toLowerCase() || "";
+        const userEmail = deposit.account?.user?.email?.toLowerCase() || "";
+        const accountNumber =
+          deposit.account?.accountNumber?.toLowerCase() || "";
+        const description = deposit.description?.toLowerCase() || "";
+        const accountType = deposit.account?.type?.toLowerCase() || "";
+
+        return (
+          userName.includes(searchLower) ||
+          userEmail.includes(searchLower) ||
+          accountNumber.includes(searchLower) ||
+          description.includes(searchLower) ||
+          accountType.includes(searchLower)
+        );
+      });
+    }
+
+    // Apply date filter if selected
+    if (selectedDate) {
+      const selectedDateStr = moment(selectedDate).format("YYYY-MM-DD");
+      filtered = filtered.filter(
+        (deposit) =>
+          moment(deposit.createdAt).format("YYYY-MM-DD") === selectedDateStr
+      );
+    }
+
+    return filtered;
   };
 
-  // Calculate total amount for a specific date
-  const getTotalForDate = (date) => {
-    const dateDeposits = getDepositsForDate(date);
-    return dateDeposits.reduce((total, deposit) => total + deposit.amount, 0);
-  };
+  // Get filtered deposits
+  const filteredDeposits = getFilteredDeposits();
 
-  // Get unique dates from all deposits
+  // Calculate totals for filtered results
+  const filteredTotal = filteredDeposits.reduce(
+    (total, deposit) => total + deposit.amount,
+    0
+  );
+
+  // Get today's total (unfiltered)
+  const todayDeposits = deposits.filter(
+    (deposit) =>
+      moment(deposit.createdAt).format("YYYY-MM-DD") ===
+      moment().format("YYYY-MM-DD")
+  );
+  const todayTotal = todayDeposits.reduce(
+    (total, deposit) => total + deposit.amount,
+    0
+  );
+
+  // Get unique dates from all deposits for date filter options
   const getAvailableDates = () => {
     const dates = deposits.map((deposit) =>
       moment(deposit.createdAt).format("YYYY-MM-DD")
     );
-    return [...new Set(dates)].sort().reverse(); // Most recent first
+    return [...new Set(dates)].sort().reverse();
   };
 
-  // Get deposits for currently selected date
-  const currentDayDeposits = getDepositsForDate(selectedDate);
-  const totalForSelectedDate = getTotalForDate(selectedDate);
-
-  // Get today's total
-  const todayTotal = getTotalForDate(moment().format("YYYY-MM-DD"));
-  const todayDepositsCount = getDepositsForDate(moment().format("YYYY-MM-DD"))
-    .length;
+  // Clear all filters
+  const clearFilters = () => {
+    setSearchTerm("");
+    setSelectedDate(null);
+  };
 
   if (loading) {
     return (
@@ -128,7 +174,7 @@ const ViewDeposits = () => {
     );
   }
 
-  const rows = currentDayDeposits.map((deposit) => (
+  const rows = filteredDeposits.map((deposit) => (
     <Table.Tr key={deposit.id}>
       <Table.Td>
         <Stack gap="xs">
@@ -191,9 +237,9 @@ const ViewDeposits = () => {
           </ActionIcon>
         </Group>
 
-        {/* Daily Summary Cards */}
+        {/* Summary Cards */}
         <Grid>
-          <Grid.Col span={6}>
+          <Grid.Col span={4}>
             <Paper p="md" withBorder>
               <Group gap="sm">
                 <IconCoins size="2rem" color="green" />
@@ -204,30 +250,57 @@ const ViewDeposits = () => {
                       : `K${todayTotal.toLocaleString()}`}
                   </Text>
                   <Text size="sm" c="dimmed">
-                    Today's Total Deposits
+                    Today's Total
                   </Text>
                   <Text size="xs" c="dimmed">
-                    {todayDepositsCount} transactions
+                    {todayDeposits.length} transactions
                   </Text>
                 </Box>
               </Group>
             </Paper>
           </Grid.Col>
-          <Grid.Col span={6}>
+          <Grid.Col span={4}>
             <Paper p="md" withBorder>
               <Group gap="sm">
-                <IconCalendar size="2rem" color="blue" />
+                <IconSearch size="2rem" color="blue" />
                 <Box>
                   <Text size="lg" fw={700} c="blue">
                     {formatAmount
-                      ? formatAmount(totalForSelectedDate)
-                      : `K${totalForSelectedDate.toLocaleString()}`}
+                      ? formatAmount(filteredTotal)
+                      : `K${filteredTotal.toLocaleString()}`}
                   </Text>
                   <Text size="sm" c="dimmed">
-                    Selected Date Total
+                    Filtered Total
                   </Text>
                   <Text size="xs" c="dimmed">
-                    {currentDayDeposits.length} transactions
+                    {filteredDeposits.length} transactions
+                  </Text>
+                </Box>
+              </Group>
+            </Paper>
+          </Grid.Col>
+          <Grid.Col span={4}>
+            <Paper p="md" withBorder>
+              <Group gap="sm">
+                <IconCreditCard size="2rem" color="orange" />
+                <Box>
+                  <Text size="lg" fw={700} c="orange">
+                    {formatAmount
+                      ? formatAmount(
+                          deposits.reduce(
+                            (total, deposit) => total + deposit.amount,
+                            0
+                          )
+                        )
+                      : `K${deposits
+                          .reduce((total, deposit) => total + deposit.amount, 0)
+                          .toLocaleString()}`}
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    All Time Total
+                  </Text>
+                  <Text size="xs" c="dimmed">
+                    {deposits.length} transactions
                   </Text>
                 </Box>
               </Group>
@@ -235,42 +308,105 @@ const ViewDeposits = () => {
           </Grid.Col>
         </Grid>
 
-        {/* Date Filter */}
+        {/* Search and Filter Interface */}
         <Card shadow="sm" padding="md">
-          <Group gap="md" align="end">
-            <Select
-              label="Select Date"
-              placeholder="Choose a date"
-              value={selectedDate}
-              onChange={setSelectedDate}
-              data={getAvailableDates().map((date) => ({
-                value: date,
-                label:
-                  moment(date).format("MMMM DD, YYYY") +
-                  (date === moment().format("YYYY-MM-DD") ? " (Today)" : ""),
-              }))}
-              style={{ flex: 1 }}
-            />
-            <Text size="sm" c="dimmed">
-              Showing deposits for{" "}
-              {moment(selectedDate).format("MMMM DD, YYYY")}
-            </Text>
-          </Group>
+          <Stack gap="md">
+            <Group justify="space-between" align="center">
+              <Text fw={600} size="lg">
+                Search & Filter Deposits
+              </Text>
+              {(searchTerm || selectedDate) && (
+                <Badge
+                  variant="light"
+                  color="red"
+                  style={{ cursor: "pointer" }}
+                  onClick={clearFilters}
+                >
+                  Clear Filters
+                </Badge>
+              )}
+            </Group>
+
+            <Grid>
+              <Grid.Col span={8}>
+                <TextInput
+                  placeholder="Search by name, email, account number, or description..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  leftSection={<IconSearch size="1rem" />}
+                  rightSection={
+                    searchTerm && (
+                      <ActionIcon
+                        variant="subtle"
+                        color="gray"
+                        onClick={() => setSearchTerm("")}
+                        size="sm"
+                      >
+                        ✕
+                      </ActionIcon>
+                    )
+                  }
+                />
+              </Grid.Col>
+              <Grid.Col span={4}>
+                <Select
+                  placeholder="Filter by date (optional)"
+                  value={
+                    selectedDate
+                      ? moment(selectedDate).format("YYYY-MM-DD")
+                      : null
+                  }
+                  onChange={(value) =>
+                    setSelectedDate(value ? new Date(value) : null)
+                  }
+                  data={getAvailableDates().map((date) => ({
+                    value: date,
+                    label:
+                      moment(date).format("MMM DD, YYYY") +
+                      (date === moment().format("YYYY-MM-DD")
+                        ? " (Today)"
+                        : ""),
+                  }))}
+                  leftSection={<IconCalendar size="1rem" />}
+                  clearable
+                />
+              </Grid.Col>
+            </Grid>
+
+            {/* Search Results Summary */}
+            <Group gap="md">
+              <Badge variant="light" color="blue" size="lg">
+                {filteredDeposits.length} result
+                {filteredDeposits.length !== 1 ? "s" : ""}
+              </Badge>
+              {searchTerm && (
+                <Text size="sm" c="dimmed">
+                  Searching for: "<strong>{searchTerm}</strong>"
+                </Text>
+              )}
+              {selectedDate && (
+                <Text size="sm" c="dimmed">
+                  Date:{" "}
+                  <strong>
+                    {moment(selectedDate).format("MMMM DD, YYYY")}
+                  </strong>
+                </Text>
+              )}
+            </Group>
+          </Stack>
         </Card>
 
         <Card shadow="sm" padding="lg">
-          {currentDayDeposits.length === 0 ? (
+          {filteredDeposits.length === 0 ? (
             <Box style={{ textAlign: "center", padding: "2rem" }}>
               <Text size="lg" c="dimmed">
                 {deposits.length === 0
                   ? "No deposits found"
-                  : `No deposits found for ${moment(selectedDate).format(
-                      "MMMM DD, YYYY"
-                    )}`}
+                  : "No deposits match your search criteria"}
               </Text>
-              {deposits.length > 0 && (
+              {deposits.length > 0 && (searchTerm || selectedDate) && (
                 <Text size="sm" c="dimmed" mt="xs">
-                  Try selecting a different date from the dropdown above
+                  Try adjusting your search terms or clearing the filters
                 </Text>
               )}
             </Box>
