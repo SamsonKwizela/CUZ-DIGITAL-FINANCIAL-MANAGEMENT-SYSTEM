@@ -13,6 +13,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { toast } from "react-toastify";
+import { IconSend } from "@tabler/icons-react";
 
 const Beneficiary = () => {
   const token = localStorage.getItem("authToken");
@@ -22,24 +23,21 @@ const Beneficiary = () => {
   const [beneficiaries, setBeneficiaries] = useState([]);
   const [selectedBeneficiary, setSelectedBeneficiary] = useState(null);
   const [opened, setOpened] = useState(false);
-  const [amount, setAmount] = useState("");
-  const [transferDesc, setTransferDesc] = useState("");
 
-  // ✅ Fetch all beneficiaries
+  // ---------------------- Fetch Beneficiaries ----------------------
   const fetchBeneficiaries = async () => {
     try {
       setLoading(true);
       setError(null);
 
       const res = await fetch("http://localhost:8000/cuz/bank/beneficiaries", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!res.ok) throw new Error("Failed to fetch beneficiaries");
 
       const data = await res.json();
+
       if (Array.isArray(data)) setBeneficiaries(data);
       else if (Array.isArray(data.beneficiaries))
         setBeneficiaries(data.beneficiaries);
@@ -56,7 +54,7 @@ const Beneficiary = () => {
     fetchBeneficiaries();
   }, []);
 
-  // ✅ Add beneficiary form
+  // ---------------------- Add Beneficiary Form ----------------------
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
@@ -74,7 +72,6 @@ const Beneficiary = () => {
     },
   });
 
-  // ✅ Save beneficiary
   const handleSave = async (values) => {
     const payload = {
       accountNumber: values.accountNumber,
@@ -103,28 +100,41 @@ const Beneficiary = () => {
       fetchBeneficiaries();
     } catch (err) {
       console.error("Save error:", err);
-      toast.error("Failed to save beneficiary. Check your inputs or server.");
+      toast.error("Failed to save beneficiary.");
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ When clicking a beneficiary card
+  // ---------------------- OPEN TRANSFER MODAL ----------------------
   const handleCardClick = (b) => {
     setSelectedBeneficiary(b);
     setOpened(true);
   };
-   console.log("object",setSelectedBeneficiary)
 
-  // ✅ Handle transfer
+  // ---------------------- Transfer Form Validation ----------------------
+  const transferForm = useForm({
+    mode: "uncontrolled",
+    initialValues: {
+      amount: "",
+      transferDesc: "",
+    },
+    validate: {
+      amount: (value) =>
+        !value || Number(value) <= 0 ? "Please enter a valid amount" : null,
+
+      transferDesc: (value) =>
+        value.trim() === "" ? "Please enter a description" : null,
+    },
+  });
+
+  // ---------------------- Handle Transfer ----------------------
   const handleTransfer = async () => {
-    if (!amount) {
-      toast.error("Please enter an amount");
-      return;
-    }
+    const values = transferForm.getValues();
 
     try {
       setLoading(true);
+
       const res = await fetch(
         "http://localhost:8000/cuz/bank/transfer-to-beneficiary",
         {
@@ -135,20 +145,18 @@ const Beneficiary = () => {
           },
           body: JSON.stringify({
             beneficiaryId: selectedBeneficiary?.id,
-            amount: Number(amount),
-            description: transferDesc,
+            amount: Number(values.amount),
+            description: values.transferDesc,
           }),
         }
       );
 
       const data = await res.json();
-      console.log(data);
 
       if (res.ok) {
         toast.success("Transfer successful!");
         setOpened(false);
-        setAmount("");
-        setTransferDesc("");
+        transferForm.reset();
       } else {
         toast.error(data.message || "Transfer failed.");
       }
@@ -162,8 +170,7 @@ const Beneficiary = () => {
 
   return (
     <Container size="sm" py="xl">
-
-      {/* --- Add Beneficiary Form --- */}
+      {/* ---------------------- Add Beneficiary Form ---------------------- */}
       <Card shadow="md" radius="lg" withBorder p="lg" mb="lg">
         <Title order={3} align="center" mb="md" c="blue">
           Add Beneficiary
@@ -188,7 +195,7 @@ const Beneficiary = () => {
             {...form.getInputProps("nickname")}
           />
 
-          <Textarea
+          {/* <Textarea
             label="Description"
             placeholder="He is..."
             radius="md"
@@ -196,8 +203,9 @@ const Beneficiary = () => {
             autosize
             minRows={3}
             mb="lg"
+            withAsterisk
             {...form.getInputProps("description")}
-          />
+          /> */}
 
           <Group position="center">
             <Button type="submit" radius="md" color="blue" loading={loading}>
@@ -207,7 +215,7 @@ const Beneficiary = () => {
         </form>
       </Card>
 
-      {/* --- Beneficiaries List --- */}
+      {/* ---------------------- Beneficiaries List ---------------------- */}
       <Title order={4} mb="sm" align="center">
         Saved Beneficiaries
       </Title>
@@ -230,7 +238,6 @@ const Beneficiary = () => {
           shadow="md"
           radius="lg"
           withBorder
-          onClick={() => handleCardClick(b)}
           style={{
             backgroundColor: "#f8f9fa",
             padding: "18px 20px",
@@ -240,54 +247,79 @@ const Beneficiary = () => {
             border: "1px solid #e0e0e0",
           }}
         >
-          <Text fw={700} size="lg" c="indigo">
-            {b.nickname}
-          </Text>
-          <Text size="sm" c="dimmed">
-            Account Number:{" "}
-            <span style={{ color: "#333", fontWeight: 500 }}>
-              {b.accountNumber}
-            </span>
-          </Text>
-          <Text size="sm" c="dimmed">
-            Description:{" "}
-            <span style={{ color: "#555", fontStyle: "italic" }}>
-              {b.description}
-            </span>
-          </Text>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+              position: "relative",
+            }}
+          >
+            <Text fw={700} size="lg" c="indigo">
+              {b.nickname}
+            </Text>
+
+            <Text size="sm" c="dimmed">
+              Account Number:{" "}
+              <span style={{ color: "#333", fontWeight: 500 }}>
+                {b.accountNumber}
+              </span>
+            </Text>
+
+            <Button
+              rightSection={<IconSend size={16} />}
+              color="blue"
+              variant="filled"
+              radius="md"
+              onClick={() => handleCardClick(b)}
+              style={{
+                marginLeft: "auto",
+              }}
+            >
+              Send
+            </Button>
+          </div>
         </Card>
       ))}
 
-      {/* --- Transfer Modal --- */}
+      {/* ---------------------- Transfer Modal ---------------------- */}
       <Modal
         opened={opened}
         onClose={() => setOpened(false)}
         title={`Transfer to ${selectedBeneficiary?.nickname}`}
         centered
       >
-        <TextInput
-          label="Amount"
-          placeholder="Enter amount"
-          type="number"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          mb="md"
-        />
-        <Textarea
-          label="Description"
-          placeholder="Optional note"
-          value={transferDesc}
-          onChange={(e) => setTransferDesc(e.target.value)}
-          mb="md"
-        />
-        <Group position="right">
-          <Button color="blue" onClick={handleTransfer} loading={loading}>
-            Send
-          </Button>
-          <Button variant="outline" onClick={() => setOpened(false)}>
-            Cancel
-          </Button>
-        </Group>
+        <form onSubmit={transferForm.onSubmit(handleTransfer)}>
+          <TextInput
+            label="Amount"
+            placeholder="Enter amount"
+            type="number"
+            size="md"
+            mb="md"
+            withAsterisk
+            {...transferForm.getInputProps("amount")}
+          />
+
+          <Textarea
+            label="Description"
+            placeholder="Optional note"
+            size="md"
+            minRows={3}
+            mb="md"
+            withAsterisk
+            {...transferForm.getInputProps("transferDesc")}
+          />
+
+          <Group position="right">
+            <Button type="submit" color="blue" loading={loading}>
+              Send
+            </Button>
+
+            <Button variant="outline" onClick={() => setOpened(false)}>
+              Cancel
+            </Button>
+          </Group>
+        </form>
       </Modal>
     </Container>
   );
